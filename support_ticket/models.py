@@ -5,7 +5,15 @@ from django.db import models
 from support_user.models import User
 
 
-class Ticket(models.Model):
+class TimeStamp(models.Model):
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Ticket(TimeStamp):
 
     PRIORITY_CHOICES = (
         ('HIGH', 'High'),
@@ -24,27 +32,29 @@ class Ticket(models.Model):
 
     title = models.CharField(max_length=120)
     description = models.TextField()
-    reference_url = models.URLField()
+    reference_url = models.URLField(blank=True)
     owner = models.ForeignKey(User)
     priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES,
                                 default='NORMAL')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
                               default='NEW')
-    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def get_last_update_datetime(self):
+        most_recent_update = Update.objects.filter(ticket=self).latest('last_modified')
+        return most_recent_update.last_modified
 
 
-class Update(models.Model):
+class Update(TimeStamp):
     ticket = models.ForeignKey(Ticket)
     message = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    
+    writer = models.ForeignKey(User)
 
 
 def get_upload_path(instance, filename):
     return os.path.join("files/{}".format(instance.owner.id), '%Y/%m', filename)
 
 
-class FileAttachment(models.Model):
+class FileAttachment(TimeStamp):
     ticket = models.ForeignKey(Ticket)
     description = models.TextField()
     file = models.FileField(upload_to=get_upload_path)
