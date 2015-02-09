@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from datetime import datetime
 
 # Create your models here.
 from support_user.models import User
@@ -43,19 +44,30 @@ class Ticket(TimeStamp):
         most_recent_update = Update.objects.filter(ticket=self).latest('last_modified')
         return most_recent_update.last_modified
 
+    def get_readable_date(self):
+        return datetime.strftime(self.date_created, "%a, %b %d, %Y %H:%M")
+
+    def __unicode__(self):
+        return "{}: {} - created on {}".format(self.owner.username, self.title[:30], self.get_readable_date())
+
 
 class Update(TimeStamp):
     ticket = models.ForeignKey(Ticket)
     message = models.TextField()
     writer = models.ForeignKey(User)
 
+    def update_ticket_status(self, new_status):
+        self.ticket.status = new_status
+        self.ticket.save()
+        return True
 
 def get_upload_path(instance, filename):
-    return os.path.join("files/{}".format(instance.owner.id), '%Y/%m', filename)
+    yearmonth = datetime.strftime(instance.ticket.date_created, "%Y/%m")
+    return os.path.join("files/{}/{}".format(instance.ticket.owner.id, yearmonth), filename)
 
 
 class FileAttachment(TimeStamp):
     ticket = models.ForeignKey(Ticket)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     file = models.FileField(upload_to=get_upload_path)
 
