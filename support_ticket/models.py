@@ -9,6 +9,8 @@ from support_user.models import User
 class TimeStamp(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(null=True, editable=False)
+    updated = models.DateTimeField(null=True, editable=False)
 
     class Meta:
         abstract = True
@@ -28,7 +30,6 @@ class Ticket(TimeStamp):
         ('CLOSED', 'Closed'),
         ('REOPENED', 'Reopened'),
         ('DELETED', 'Deleted'),
-
     )
 
     title = models.CharField(max_length=120)
@@ -41,7 +42,7 @@ class Ticket(TimeStamp):
                               default='NEW')
 
     def get_last_update_datetime(self):
-        most_recent_update = Update.objects.filter(ticket=self).latest('last_modified')
+        most_recent_update = UpdateTicket.objects.filter(ticket=self).latest('last_modified')
         return most_recent_update.last_modified
 
     def get_readable_date(self):
@@ -51,7 +52,7 @@ class Ticket(TimeStamp):
         return "{}: {} - created on {}".format(self.owner.username, self.title[:30], self.get_readable_date())
 
 
-class Update(TimeStamp):
+class UpdateTicket(TimeStamp):
     ticket = models.ForeignKey(Ticket)
     message = models.TextField()
     writer = models.ForeignKey(User)
@@ -60,6 +61,10 @@ class Update(TimeStamp):
         self.ticket.status = new_status
         self.ticket.save()
         return True
+
+    def __unicode__(self):
+        return u"{}: {}: {}".format(self.ticket.id, self.writer, self.message[:30])
+
 
 def get_upload_path(instance, filename):
     yearmonth = datetime.strftime(instance.ticket.date_created, "%Y/%m")
@@ -70,4 +75,8 @@ class FileAttachment(TimeStamp):
     ticket = models.ForeignKey(Ticket)
     description = models.TextField(blank=True)
     file = models.FileField(upload_to=get_upload_path)
+    owner = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return u"{}: {}: {}".format(self.ticket.id, self.owner.first_name, self.file.name)
 
