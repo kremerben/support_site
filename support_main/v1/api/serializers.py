@@ -3,18 +3,15 @@ from support_ticket.models import Ticket
 from support_user.models import User
 
 
-
-
-
 class UserSerializer(serializers.ModelSerializer):
-    # tickets = serializers.HyperlinkedRelatedField(many=True, view_name='tickets-detail', read_only=True)
-    # profile =
+    # tickets = serializers.HyperlinkedRelatedField(many=True, view_name='ticket-list', read_only=True)
+    ticket_list = serializers.ReadOnlyField(source='ticket.title')
 
     class Meta:
         model = User
-        fields = ('username',  'company', 'image', 'about', 'phone',
+        fields = ('username', 'ticket_list', 'company', 'image', 'about', 'phone',
         'alt_phone')
-        # read_only_fields  = ()
+        # read_only_fields = ('username',)
 
 
 class TicketSerializer(serializers.ModelSerializer):

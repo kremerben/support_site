@@ -1,3 +1,4 @@
+
          <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -10,8 +11,9 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url "home" %}"> Page Name</a>
-                    {% block main_nav %}{% endblock %}
+                    <li><a href="{{ APIV1ROOT }}">API V1</a>
+                    {% block main_nav %}
+                    {% endblock %}
                     <li>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">

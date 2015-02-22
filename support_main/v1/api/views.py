@@ -13,3 +13,6 @@ class UserViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+
+    def pre_save(self, obj):
+        obj.owner = self.request.user
