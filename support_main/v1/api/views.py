@@ -14,5 +14,5 @@ class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    def pre_save(self, obj):
-        obj.owner = self.request.user
+    # def pre_save(self, obj):
+    #     obj.owner = self.request.user

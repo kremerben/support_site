@@ -1,17 +1,17 @@
 from django.contrib import admin
 
 # Register your models here.
-from support_ticket.models import Ticket, UpdateTicket, FileAttachment
+from support_ticket.models import Ticket, Comment, FileAttachment
 
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('priority', 'status', 'owner','title',)
-    list_filter = ('priority', 'status', 'owner','title',)
+    list_display = ('priority', 'status', 'owner', 'title',)
+    list_filter = ('priority', 'status', 'owner', 'title',)
 
 
-class UpdateTicketAdmin(admin.ModelAdmin):
-    list_display = ('ticket', 'writer', 'message',)
-    list_filter = ('ticket', 'writer', 'message',)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('ticket', 'user', 'message',)
+    list_filter = ('ticket', 'user', 'message',)
 
 
 class FileAttachmentAdmin(admin.ModelAdmin):
@@ -20,7 +20,7 @@ class FileAttachmentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Ticket, TicketAdmin)
-admin.site.register(UpdateTicket, UpdateTicketAdmin)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(FileAttachment, FileAttachmentAdmin)
 
 
