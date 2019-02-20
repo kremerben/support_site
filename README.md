@@ -1,4 +1,4 @@
-Django Master Project
+Support Site
 ==============
 
-Description here
+Django-based client support web-portal project.
